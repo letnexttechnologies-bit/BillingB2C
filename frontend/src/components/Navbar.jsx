@@ -29,7 +29,7 @@ const Navbar = ({ onLogout }) => {
       {/* Sidebar */}
       <div className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <h1 className="app-title">Dept Billing</h1>
+          <h1 className="app-title">Billing</h1>
         </div>
 
         <nav className="sidebar-nav">
