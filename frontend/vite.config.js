@@ -4,5 +4,5 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/BillingB2C/", // IMPORTANT for GitHub Pages and Netlify
+  base: "/", // IMPORTANT for GitHub Pages and Netlify
 });
