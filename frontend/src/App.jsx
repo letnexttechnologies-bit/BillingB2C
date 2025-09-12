@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
@@ -12,6 +12,8 @@ import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -21,6 +23,33 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  // Handle install prompt
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        console.log("✅ App installed");
+      } else {
+        console.log("❌ Install dismissed");
+      }
+      setDeferredPrompt(null);
+      setShowInstallButton(false);
+    }
+  };
+
   return (
     <BrowserRouter>
       <div
@@ -28,6 +57,25 @@ function App() {
           isLoggedIn ? "with-navbar" : "login-only"
         }`}>
         {isLoggedIn && <Navbar onLogout={handleLogout} />}
+
+        {/* Show install button if prompt is available */}
+        {showInstallButton && (
+          <button
+            onClick={handleInstallClick}
+            style={{
+              position: "fixed",
+              bottom: "16px",
+              right: "16px",
+              padding: "10px 16px",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              border: "none",
+              zIndex: 9999,
+            }}>
+            📲 Install App
+          </button>
+        )}
 
         <div
           className={`main-content ${
