@@ -1,5 +1,5 @@
 import React from "react";
-import "./Receipt.css"; // Ensure this CSS file is created as well
+import "./Receipt.css";
 
 const Receipt = ({ invoice, onClose, onPrint }) => {
   if (!invoice) return null;
@@ -11,12 +11,18 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
     }).format(amount);
   };
 
-  const formatDate = (dateString) => {
+  const formatDateTime = (dateString) => {
     const date = new Date(dateString);
+
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
   const calculateSubtotal = (items) => {
@@ -30,7 +36,6 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
   const calculateGST = (items) => {
     const gstBreakdown = { cgst: 0, sgst: 0, total: 0 };
     items.forEach((item) => {
-      // Assuming a default GST rate if not provided
       const gstRate = item.gstRate || 0.18;
       const taxableAmount = item.price * item.quantity;
       const gstAmount = taxableAmount * gstRate;
@@ -43,12 +48,16 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
 
   const subtotal = calculateSubtotal(invoice.items);
   const gst = calculateGST(invoice.items);
-  const totalTaxableValue = calculateTaxableValue(invoice.items);
+
+  // ✅ New computed total
+  const computedTotal = subtotal + gst.cgst + gst.sgst;
 
   const getFullGSTAmount = (item) => {
     const gstRate = item.gstRate || 0.18;
     return item.price * item.quantity * gstRate;
   };
+
+  const invoiceNumber = invoice.invoiceId ?? invoice._id ?? "N/A";
 
   return (
     <div className="receipt-overlay">
@@ -56,12 +65,10 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
         {/* Printable receipt */}
         <div className="receipt" id="receipt-to-print">
           <div className="receipt-header">
-            <p className="company-name">
-              {invoice.companyName || "SEENATH TRADERS"}
-            </p>
+            <p className="company-name">{invoice.companyName || "LetNext"}</p>
             <p className="company-info">
               {invoice.companyAddress ||
-                "307, VRLA STORES COMPLEX, T.V.S ROAD, PERANI - 626002"}
+                "307, VELA STORES COMPLEX, T.V.S ROAD, ERODE - 600000"}
             </p>
             <p className="company-info">
               GSTIN: {invoice.gstin || "33ABCDE1234F1Z5"}
@@ -70,11 +77,13 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
               STATE: {invoice.state || "Tamil Nadu (33)"}
             </p>
             <p className="company-info">
-              PH NO: {invoice.phone || "9583678702"}
+              PH NO: {invoice.phone || "9025562875"}
             </p>
             <div className="invoice-details">
-              <span>BILL DATE: {formatDate(invoice.date)}</span>
-              <span>INVOICE #: {invoice.id}</span>
+              <span>BILL DATE & TIME: {formatDateTime(invoice.date)}</span>
+              <span>
+                <strong>INVOICE ID: {invoiceNumber}</strong>
+              </span>
               <span>VRN NO: {invoice.vrnNo || "9383678702"}</span>
             </div>
           </div>
@@ -90,18 +99,11 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
               <p>ADDRESS: {invoice.customerAddress}</p>
             )}
             <p>
-              <strong>Invoice ID:</strong> {invoice.id}
+              <strong>Invoice ID:</strong> {invoiceNumber}
             </p>
           </div>
 
           <div className="receipt-items-table">
-            <div className="table-header">
-              <span
-                colSpan="9"
-                style={{ textAlign: "center", fontWeight: "bold" }}>
-                Invoice #: {invoice.id}
-              </span>
-            </div>
             <div className="table-header">
               <span>SL.</span>
               <span className="desc">DESC</span>
@@ -152,17 +154,17 @@ const Receipt = ({ invoice, onClose, onPrint }) => {
             </div>
             <div className="receipt-row total">
               <span>TOTAL:</span>
-              <span>{formatCurrency(invoice.totalAmount)}</span>
+              <span>{formatCurrency(computedTotal)}</span>
             </div>
           </div>
           <div className="total-in-words">
-            <p>** {`RUPEES ${Math.round(invoice.totalAmount)} ONLY`} **</p>
+            <p>** {`RUPEES ${Math.round(computedTotal)} ONLY`} **</p>
           </div>
 
           <div className="receipt-footer">
             <div className="receipt-footer-row">
               <span className="label">Total Taxable Value:</span>
-              <span className="value">{formatCurrency(totalTaxableValue)}</span>
+              <span className="value">{formatCurrency(computedTotal)}</span>
             </div>
             <p className="computer-note">
               ** This is a computer generated invoice **

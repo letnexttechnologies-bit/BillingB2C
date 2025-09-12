@@ -1,5 +1,4 @@
 /* --- Core Layout & Global Styles --- */
-/* Main content container adjustment */
 .pos-container {
   display: flex;
   height: calc(100vh - var(--navbar-height));
@@ -8,7 +7,6 @@
   padding-bottom: 20px;
   background: #f8f9fa;
   overflow: hidden;
-
   margin-left: 250px; /* Push content to the right of sidebar */
 }
 
@@ -23,7 +21,7 @@
 
 .search-header {
   display: flex;
-  justify-content: space-between; /* FIXED: changed from 'between' to 'space-between' */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   gap: 20px;
@@ -49,10 +47,7 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(200px, 1fr)
-  ); /* Increased min width for better text display */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
 }
 
@@ -63,7 +58,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: white;
-  min-height: 100px; /* Added min-height for consistency */
+  min-height: 100px;
 }
 
 .product-item:hover {
@@ -77,14 +72,13 @@
   cursor: not-allowed;
 }
 
-/* REMOVED: All image-related CSS since we're not using images */
 .product-image,
 .cart-item-image {
-  display: none; /* Hide image containers */
+  display: none;
 }
 
 .product-info h4 {
-  margin: 0 0 8px 0; /* Increased bottom margin */
+  margin: 0 0 8px 0;
   font-size: 14px;
   color: #333;
   line-height: 1.3;
@@ -98,7 +92,7 @@
 }
 
 .product-stock {
-  margin: 5px 0 0 0; /* Adjusted margins */
+  margin: 5px 0 0 0;
   font-size: 12px;
   color: #666;
 }
@@ -146,7 +140,6 @@
 
 .cart-items {
   flex: 1;
-  /* overflow-y: auto; */
   margin-bottom: 20px;
 }
 
@@ -317,14 +310,13 @@
   cursor: not-allowed;
 }
 
-/* --- Customer Section Styles --- */
+/* --- Customer Section --- */
 .customer-section {
   background: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 20px;
   border: 1px solid #e9ecef;
-  overflow: visible; /* Allow content to show */
 }
 
 .customer-section h3 {
@@ -338,7 +330,7 @@
   gap: 10px;
   margin-bottom: 15px;
   align-items: center;
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  flex-wrap: wrap;
 }
 
 .mobile-search-input {
@@ -347,7 +339,7 @@
   border: 2px solid #e9ecef;
   border-radius: 8px;
   font-size: 16px;
-  min-width: 120px; /* Prevent from becoming too small */
+  min-width: 120px;
 }
 
 .search-customer-btn,
@@ -359,7 +351,7 @@
   font-size: 14px;
   font-weight: 600;
   transition: all 0.2s ease;
-  white-space: nowrap; /* Prevent button text wrapping */
+  white-space: nowrap;
 }
 
 .search-customer-btn {
@@ -515,85 +507,18 @@
   display: inline-block;
 }
 
-/* Update search placeholder text color */
 .search-input::placeholder {
   color: #999;
 }
 
 /* --- Responsive Design --- */
-@media (max-width: 1024px) {
-  .pos-container {
-    flex-direction: column;
-    height: auto;
-  }
 
-  .cart-container {
-    min-width: auto;
-    margin-top: 20px;
-    max-height: none;
-  }
-
-  .customer-search {
-    flex-direction: column;
-  }
-
-  .mobile-search-input {
-    width: 100%;
-  }
-
-  .cart-item {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .quantity-controls {
-    justify-content: center;
-  }
-
-  .item-total {
-    text-align: center;
-  }
-
-  .remove-btn {
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .pos-container {
-    padding: 15px;
-    gap: 15px;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-
-  .cart-item {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .quantity-controls {
-    margin: 0;
-  }
-
-  .customer-search {
-    flex-direction: column;
-  }
-
-  .search-customer-btn,
-  .clear-customer-btn {
-    width: 100%;
-  }
-}
 /* --- Tablet & Small Laptop (≤ 1024px) --- */
 @media (max-width: 1024px) {
   .pos-container {
     flex-direction: column;
     height: auto;
-    margin-left: 0; /* sidebar will overlay in mobile view */
+    margin-left: 0;
   }
 
   .cart-container {
@@ -606,10 +531,20 @@
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 
+  .customer-search {
+    flex-direction: column;
+  }
+
+  .mobile-search-input {
+    width: 100%;
+  }
+
   .cart-item {
-    grid-template-columns: 1fr;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 10px;
+    text-align: left;
   }
 
   .quantity-controls {
@@ -682,6 +617,7 @@
   }
 
   .cart-item {
+    height: fit-content;
     padding: 10px;
   }
 

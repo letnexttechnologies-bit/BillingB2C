@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const Invoice = require("../models/Invoice");
 const Product = require("../models/Product");
@@ -16,17 +17,42 @@ router.get("/", async (req, res) => {
 // GET invoice by ID
 router.get("/:id", async (req, res) => {
   try {
-    // Check if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: "Invalid invoice ID" });
     }
 
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ message: "Invoice not found" });
+
     res.json(invoice);
   } catch (err) {
-    // This catch block will now handle other unexpected errors,
-    // as the invalid ID issue is handled above.
+    res.status(500).json({ error: err.message });
+  }
+});
+// DELETE invoice by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid invoice ID" });
+    }
+
+    const invoice = await Invoice.findByIdAndDelete(req.params.id);
+    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
+
+    // Restore stock when invoice deleted
+    for (const item of invoice.items) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.stockQuantity += item.quantity;
+        await product.save();
+      }
+    }
+
+    res.json({
+      message: "Invoice deleted successfully",
+      deletedInvoice: invoice,
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
@@ -89,7 +115,7 @@ router.post("/", async (req, res) => {
       await product.save();
     }
 
-    // 4. Save invoice
+    // 4. Save invoice (invoiceId auto-generated in model pre-save hook)
     const invoice = new Invoice({
       customerName,
       customerMobile,

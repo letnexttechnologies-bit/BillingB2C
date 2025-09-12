@@ -1,6 +1,4 @@
-/* * The main sidebar container.
- * 'display: flex' and 'flex-direction: column' are crucial for stacking items.
- */
+/* Sidebar Base */
 .sidebar {
   background: #1e293b;
   color: white;
@@ -8,34 +6,48 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px; /* or whatever your navbar's width is */
+  width: 260px;
   height: 100%;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #334155;
-  z-index: 1000;
+  z-index: 1200;
+  transition: transform 0.3s ease;
 }
 
+/* Desktop: visible */
+@media (min-width: 769px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile: hidden by default */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar header */
 .sidebar-header {
   padding-bottom: 20px;
   border-bottom: 1px solid #334155;
   margin-bottom: 20px;
 }
 
-.app-title {
+.app-title h1 {
   font-size: 20px;
   font-weight: bold;
-  color: #ffffff;
+  width: 100px;
+  color: #fff;
   margin: 0;
 }
 
-/* * This element takes up all remaining space.
- * 'flex: 1' pushes the following items (like the logout button) to the bottom.
- */
-.sidebar-nav {
-  flex: 1;
-}
-
+/* Nav section */
 .nav-section {
   margin-bottom: 25px;
 }
@@ -63,13 +75,13 @@
 
 .nav-item:hover {
   background: #334155;
-  color: #ffffff;
+  color: #fff;
   transform: translateX(2px);
 }
 
 .nav-item.active {
   background: #3b82f6;
-  color: #ffffff;
+  color: #fff;
   font-weight: 500;
 }
 
@@ -84,86 +96,34 @@
   font-weight: 500;
 }
 
-.current-url {
+/* Sidebar Footer */
+.sidebar-footer {
   margin-top: auto;
-  padding: 15px;
-  background: #0f172a;
-  border-radius: 8px;
-  border: 1px solid #334155;
 }
 
-.url-text {
-  font-size: 11px;
-  color: #94a3b8;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-  word-break: break-all;
-}
-
-/* Scrollbar styling */
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 2px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 220px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1000;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-}
-
-/* * The key fix: 'margin-top: auto' pushes the element to the bottom of its flex container.
- * I've also added 'margin-top' to give it some space below the navigation.
- */
 .logout-button {
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: auto; /* This pushes the button to the bottom */
-  margin-top: 25px; /* Add some margin above the button for spacing */
 }
-/* Backdrop overlay when sidebar is open on mobile */
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* Overlay */
 .sidebar-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 900;
+  z-index: 1100;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -174,58 +134,45 @@
   pointer-events: auto;
 }
 
-/* Mobile sidebar improvements */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 240px;
-    background: #1e293b;
-    border-right: none;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
-    border-radius: 0 12px 12px 0;
-  }
-
-  .nav-item {
-    font-size: 15px;
-    padding: 14px 18px;
-    margin: 6px 0;
-    border-radius: 10px;
-  }
-
-  .nav-item:hover {
-    background: #3b82f6;
-    transform: translateX(4px);
-  }
-
-  .logout-button {
-    margin-top: 20px;
-    border-radius: 10px;
-  }
-}
-
-/* Hamburger button with floating style */
+/* Hamburger button */
 .hamburger-btn {
   display: none;
   position: fixed;
   top: 15px;
   left: 15px;
-  background: #3b82f6;
-  color: white;
+  background: transparent;
   border: none;
-  font-size: 22px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  z-index: 1101;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease;
+  background-color: rgba(98, 122, 142, 0);
+  z-index: 1300;
+  width: 30px;
+  height: 24px;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
-.hamburger-btn:hover {
-  background: #2563eb;
+.hamburger-btn .bar {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: #000000;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Transform into X */
+.hamburger-btn.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 6px);
+}
+.hamburger-btn.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger-btn.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -6px);
 }
 
 @media (max-width: 768px) {
   .hamburger-btn {
-    display: block;
+    display: flex;
   }
 }

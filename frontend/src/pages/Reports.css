@@ -1,9 +1,9 @@
 .reports-container {
   padding: 20px;
   max-width: 1400px;
-  margin-left: 250px; /* shift right to clear sidebar */
-
   margin: 0 auto;
+  margin-left: 250px; /* space for sidebar (desktop) */
+  transition: margin-left 0.3s ease;
 }
 
 .reports-container h1 {
@@ -340,19 +340,35 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+  .reports-container {
+    margin-left: 200px; /* smaller sidebar/tablet */
+    padding: 15px;
   }
 
-  .table-header span:nth-child(n + 4),
-  .table-row span:nth-child(n + 4) {
-    display: none;
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .filters {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .payment-cards {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
+  .reports-container {
+    margin-left: 0; /* hide sidebar offset */
+    padding: 10px;
+  }
+
+  .summary-cards,
+  .payment-cards {
+    grid-template-columns: 1fr;
+  }
+
   .filters {
     grid-template-columns: 1fr;
   }
@@ -361,17 +377,48 @@
     justify-content: center;
   }
 
-  .summary-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .payment-cards {
-    grid-template-columns: 1fr;
-  }
-
   .export-section {
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+
+  .sales-table-container {
+    overflow-x: auto; /* ✅ allow scroll for wide tables */
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 120px 120px 120px 80px 120px 120px 80px;
+    font-size: 0.85rem;
+    min-width: 800px; /* ✅ prevent squashing */
+  }
+}
+
+@media (max-width: 480px) {
+  .reports-container {
+    padding: 8px;
+  }
+
+  .summary-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .summary-icon {
+    margin-bottom: 10px;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .export-btn {
+    font-size: 14px;
+    padding: 10px 15px;
   }
 }

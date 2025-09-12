@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getInvoices, getInvoiceById } from "../api/index";
+import { getInvoices } from "../api/index";
 import Receipt from "../components/Receipt";
 import "./Reports.css";
 
@@ -16,10 +16,9 @@ const Reports = () => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
 
-  // Memoize the loadInvoices function to stabilize its identity for the useEffect hook
   const loadInvoices = useCallback(async () => {
     try {
-      const allInvoices = await getInvoices(); // await here
+      const allInvoices = await getInvoices();
       setInvoices(allInvoices || []);
       setFilteredInvoices(allInvoices || []);
       calculateSummary(allInvoices || []);
@@ -30,11 +29,10 @@ const Reports = () => {
       calculateSummary([]);
     }
   }, []);
-  // Empty dependency array because getInvoices is a stable function from localStorage
 
   useEffect(() => {
     loadInvoices();
-  }, [loadInvoices]); // Now correctly depends on the memoized loadInvoices
+  }, [loadInvoices]);
 
   const calculateSummary = (invList) => {
     const totalRevenue = invList.reduce((sum, inv) => sum + inv.totalAmount, 0);
@@ -52,7 +50,6 @@ const Reports = () => {
   const applyFilters = () => {
     let filtered = invoices;
 
-    // Filter by date
     if (filterDate) {
       filtered = filtered.filter((invoice) => {
         const invoiceDate = new Date(invoice.date).toDateString();
@@ -61,7 +58,6 @@ const Reports = () => {
       });
     }
 
-    // Filter by payment method
     if (filterPaymentMethod !== "ALL") {
       filtered = filtered.filter(
         (invoice) => invoice.paymentMethod === filterPaymentMethod
@@ -80,9 +76,9 @@ const Reports = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(amount);
   };
 
@@ -106,7 +102,7 @@ const Reports = () => {
       "Payment Method",
     ];
     const csvData = filteredInvoices.map((invoice) => [
-      invoice.id,
+      invoice.id ?? "N/A",
       new Date(invoice.date).toLocaleString(),
       invoice.customerName,
       invoice.items.length,
@@ -146,7 +142,7 @@ const Reports = () => {
   };
 
   const handleViewReceipt = (invoiceId) => {
-    const invoice = invoices.find((inv) => inv.id === invoiceId);
+    const invoice = invoices.find((inv) => inv._id === invoiceId);
     if (invoice) {
       setSelectedInvoice(invoice);
       setShowReceipt(true);
@@ -237,6 +233,7 @@ const Reports = () => {
       </div>
 
       {/* Sales Table */}
+      {/* Sales Table */}
       <div className="sales-table-container">
         <h2>Sales History</h2>
         {filteredInvoices.length === 0 ? (
@@ -258,8 +255,12 @@ const Reports = () => {
               <span>Actions</span>
             </div>
             {filteredInvoices.map((invoice) => (
-              <div key={invoice.id} className="table-row">
-                <span className="invoice-id">{invoice.id}</span>
+              <div key={invoice._id} className="table-row">
+                {/* ✅ Show custom invoiceId if available */}
+                <span className="invoice-id">
+                  {invoice.invoiceId ?? invoice._id}
+                </span>
+
                 <span className="date">{formatDate(invoice.date)}</span>
                 <span className="customer">{invoice.customerName}</span>
                 <span className="items">{invoice.items.length} items</span>
@@ -273,7 +274,7 @@ const Reports = () => {
                 <span className="actions">
                   <button
                     className="view-btn"
-                    onClick={() => handleViewReceipt(invoice.id)}
+                    onClick={() => handleViewReceipt(invoice._id)}
                     title="View Receipt">
                     👁️ View
                   </button>

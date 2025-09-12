@@ -240,7 +240,7 @@ const Inventory = () => {
                     <td className="product-name">{product.name}</td>
                     <td className="product-tag">{product.tagNo || "N/A"}</td>
                     <td className="product-price">
-                      ${Number(product.price).toFixed(2)}
+                      ₹{Number(product.price).toFixed(2)}
                     </td>
                     <td className="product-quantity">
                       {getUnitDisplay(product.stockQuantity, product.unit)}

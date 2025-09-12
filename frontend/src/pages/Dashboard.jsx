@@ -61,9 +61,9 @@ const Dashboard = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
     }).format(amount || 0);
   };
 
@@ -92,7 +92,7 @@ const Dashboard = () => {
           <div className="metric-icon">💰</div>
           <div className="metric-info">
             <h3>{formatCurrency(metrics.todayRevenue)}</h3>
-            <p>Today's Revenue</p>
+            <p>Today's Sales</p>
           </div>
         </div>
 
@@ -100,7 +100,7 @@ const Dashboard = () => {
           <div className="metric-icon">📊</div>
           <div className="metric-info">
             <h3>{formatCurrency(metrics.totalSales)}</h3>
-            <p>Total Sales</p>
+            <p>Overall Sales</p>
           </div>
         </div>
 

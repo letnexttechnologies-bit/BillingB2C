@@ -581,7 +581,9 @@ const ReportChart = () => {
                   onClick={() => handleInvoiceClick(invoice)}
                   style={{ cursor: "pointer" }}>
                   <div className="transaction-header">
-                    <span className="invoice-id">Invoice #{invoice.id}</span>
+                    <span className="invoice-id">
+                      {invoice.invoiceId ?? invoice._id}
+                    </span>
                     <span className="transaction-time">
                       {new Date(invoice.date).toLocaleTimeString()}
                     </span>

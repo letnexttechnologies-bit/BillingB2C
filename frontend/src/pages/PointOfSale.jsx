@@ -31,13 +31,12 @@ const PointOfSale = () => {
   const scannerInputRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  // ✅ Load products & customers properly with async/await
+  // ✅ Load products & customers
   useEffect(() => {
     const fetchData = async () => {
       try {
         const loadedProducts = await getProducts();
         const loadedCustomers = await getCustomers();
-
         setProducts(Array.isArray(loadedProducts) ? loadedProducts : []);
         setAllCustomers(Array.isArray(loadedCustomers) ? loadedCustomers : []);
       } catch (err) {
@@ -46,7 +45,6 @@ const PointOfSale = () => {
         setAllCustomers([]);
       }
     };
-
     fetchData();
   }, []);
 
@@ -56,7 +54,7 @@ const PointOfSale = () => {
     }
   }, [scanning]);
 
-  // ✅ Search customer by mobile (async fix)
+  // ✅ Search customer by mobile
   useEffect(() => {
     const fetchCustomer = async () => {
       if (customer.mobile && customer.mobile.length >= 10) {
@@ -106,36 +104,29 @@ const PointOfSale = () => {
       (p) =>
         p.barcode === code ||
         p.qrCode === code ||
-        p.id === code ||
+        p._id === code ||
         p.tagNo === code
     );
     if (product) {
       addToCart(product);
       setScannedCode("");
-      if (scanning) {
-        setScanning(false);
-      }
+      if (scanning) setScanning(false);
     } else {
       alert("Product not found for code: " + code);
     }
   };
 
-  // ✅ Mobile search (async fix)
+  // ✅ Mobile search
   const handleMobileSearch = async () => {
     if (mobileSearch.trim()) {
       try {
         const existingCustomer = await getCustomerByMobile(mobileSearch);
         if (existingCustomer) {
           setCustomer(existingCustomer);
-          setMobileSearch("");
         } else {
-          setCustomer({
-            name: "",
-            mobile: mobileSearch,
-            address: "",
-          });
-          setMobileSearch("");
+          setCustomer({ name: "", mobile: mobileSearch, address: "" });
         }
+        setMobileSearch("");
       } catch (err) {
         console.error("Failed to search customer:", err);
       }
@@ -151,7 +142,6 @@ const PointOfSale = () => {
         return `${product.name} (per 100g)`;
       case "pack":
         return `${product.name} (per pack)`;
-      case "piece":
       default:
         return product.name;
     }
@@ -168,7 +158,6 @@ const PointOfSale = () => {
         return `${product.stockQuantity} pack${
           product.stockQuantity !== 1 ? "s" : ""
         } in stock`;
-      case "piece":
       default:
         return `${product.stockQuantity} pc${
           product.stockQuantity !== 1 ? "s" : ""
@@ -177,7 +166,7 @@ const PointOfSale = () => {
   };
 
   const getCartItemDisplay = (item) => {
-    const product = products.find((p) => p.id === item.productId);
+    const product = products.find((p) => p._id === item.productId);
     const unit = product?.unit || "piece";
     switch (unit) {
       case "kg":
@@ -188,19 +177,19 @@ const PointOfSale = () => {
         return `${item.quantity} pack${item.quantity !== 1 ? "s" : ""} ${
           item.name
         }`;
-      case "piece":
       default:
         return `${item.quantity} ${item.name}`;
     }
   };
 
+  // ✅ Add to Cart with quantity
   const addToCart = (product) => {
     if (product.stockQuantity <= 0) {
       alert("This product is out of stock!");
       return;
     }
 
-    const existingItem = cart.find((item) => item.productId === product.id);
+    const existingItem = cart.find((item) => item.productId === product._id);
 
     if (existingItem) {
       if (existingItem.quantity >= product.stockQuantity) {
@@ -209,7 +198,7 @@ const PointOfSale = () => {
       }
       setCart(
         cart.map((item) =>
-          item.productId === product.id
+          item.productId === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -218,7 +207,7 @@ const PointOfSale = () => {
       setCart([
         ...cart,
         {
-          productId: product.id,
+          productId: product._id, // ✅ MongoDB ID for backend
           name: product.name,
           price: product.price,
           quantity: 1,
@@ -228,9 +217,7 @@ const PointOfSale = () => {
     }
 
     setTimeout(() => {
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
+      searchInputRef.current?.focus();
     }, 100);
   };
 
@@ -240,8 +227,8 @@ const PointOfSale = () => {
       return;
     }
 
-    const product = products.find((p) => p.id === productId);
-    if (newQuantity > product.stockQuantity) {
+    const product = products.find((p) => p._id === productId);
+    if (product && newQuantity > product.stockQuantity) {
       alert("Not enough stock available!");
       return;
     }
@@ -257,56 +244,51 @@ const PointOfSale = () => {
     setCart(cart.filter((item) => item.productId !== productId));
   };
 
-  const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
+  const getCartTotal = () =>
+    cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
-  const getCartItemCount = () => {
-    return cart.reduce((count, item) => count + item.quantity, 0);
-  };
+  const getCartItemCount = () =>
+    cart.reduce((count, item) => count + item.quantity, 0);
 
-  // ✅ Payment success updates stock with async products
+  // ✅ Payment success → FIXED invoice payload
   const handlePaymentSuccess = async (paymentDetails) => {
     try {
       await saveCustomer(customer);
 
       const invoice = {
-        items: cart,
+        customerName: customer.name || "Walk-in Customer",
+        customerMobile: customer.mobile || "0000000000", // ✅ always present
+        customerAddress: customer.address || "",
+
+        items: cart.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          unit: item.unit || "piece",
+        })),
+
         subtotal: getCartTotal(),
         totalAmount: getCartTotal(),
-        paymentMethod: paymentMethod,
-        paymentDetails: paymentDetails,
-        customerName: customer.name,
-        customerMobile: customer.mobile,
-        customerAddress: customer.address,
-        date: new Date().toISOString(),
+        paymentMethod,
+        paymentDetails,
         transactionId: `TXN${Date.now()}`,
         status: "completed",
+        date: new Date().toISOString(),
       };
 
-      await saveInvoice(invoice);
+      try {
+        await saveInvoice(invoice);
+      } catch (err) {
+        console.error("Save invoice failed, storing locally instead:", err);
+        localStorage.setItem("failed_invoice", JSON.stringify(invoice));
+      }
+
       setCurrentInvoice(invoice);
       setShowReceipt(true);
       setShowPaymentGateway(false);
 
-      // Refresh product stock
-      const updatedProducts = await getProducts();
-      cart.forEach((item) => {
-        const productIndex = updatedProducts.findIndex(
-          (p) => p.id === item.productId
-        );
-        if (productIndex !== -1) {
-          updatedProducts[productIndex].stockQuantity -= item.quantity;
-          if (updatedProducts[productIndex].stockQuantity < 0) {
-            updatedProducts[productIndex].stockQuantity = 0;
-          }
-        }
-      });
-      localStorage.setItem(
-        "localshop_products",
-        JSON.stringify(updatedProducts)
-      );
-      setProducts(updatedProducts);
+      // Reset cart
       setCart([]);
       setPaymentMethod("CASH");
     } catch (err) {
@@ -319,7 +301,7 @@ const PointOfSale = () => {
     setShowPaymentGateway(false);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) {
       alert("Cart is empty!");
       return;
@@ -330,7 +312,7 @@ const PointOfSale = () => {
     }
 
     if (paymentMethod === "CASH") {
-      handlePaymentSuccess({
+      await handlePaymentSuccess({
         method: "CASH",
         transactionId: `CASH${Date.now()}`,
       });
@@ -340,25 +322,17 @@ const PointOfSale = () => {
   };
 
   const clearCart = () => {
-    if (cart.length === 0) return;
-    if (window.confirm("Clear all items from cart?")) {
+    if (cart.length > 0 && window.confirm("Clear all items from cart?")) {
       setCart([]);
     }
   };
 
   const clearCustomer = () => {
-    setCustomer({
-      name: "",
-      mobile: "",
-      address: "",
-    });
+    setCustomer({ name: "", mobile: "", address: "" });
     setMobileSearch("");
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
+  const handlePrint = () => window.print();
   const handleCloseReceipt = () => {
     setShowReceipt(false);
     setCurrentInvoice(null);
@@ -376,11 +350,9 @@ const PointOfSale = () => {
               type="text"
               value={scannedCode}
               onChange={(e) => setScannedCode(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  handleScanCode(scannedCode);
-                }
-              }}
+              onKeyPress={(e) =>
+                e.key === "Enter" && handleScanCode(scannedCode)
+              }
               placeholder="Scan or enter code/tag number manually"
               className="scanner-input"
               autoFocus
@@ -437,14 +409,14 @@ const PointOfSale = () => {
         <div className="product-grid">
           {filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className={`product-item ${
                 product.stockQuantity <= 0 ? "out-of-stock" : ""
               }`}
               onClick={() => product.stockQuantity > 0 && addToCart(product)}>
               <div className="product-info">
                 <h4>{getProductDisplay(product)}</h4>
-                <p className="product-price">${product.price.toFixed(2)}</p>
+                <p className="product-price">₹{product.price.toFixed(2)}</p>
                 <p className="product-stock">{getStockDisplay(product)}</p>
                 {product.tagNo && (
                   <p className="product-code">Tag: {product.tagNo}</p>
@@ -537,7 +509,7 @@ const PointOfSale = () => {
               <div key={index} className="cart-item">
                 <div className="cart-item-details">
                   <h4>{getCartItemDisplay(item)}</h4>
-                  <p>${item.price.toFixed(2)} each</p>
+                  <p>₹{item.price.toFixed(2)} each</p>
                 </div>
                 <div className="quantity-controls">
                   <button
@@ -557,7 +529,7 @@ const PointOfSale = () => {
                   </button>
                 </div>
                 <div className="item-total">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ₹{(item.price * item.quantity).toFixed(2)}
                 </div>
                 <button
                   onClick={() => removeFromCart(item.productId)}
@@ -573,11 +545,11 @@ const PointOfSale = () => {
           <div className="cart-summary">
             <div className="summary-row">
               <span>Subtotal:</span>
-              <span>${getCartTotal().toFixed(2)}</span>
+              <span>₹{getCartTotal().toFixed(2)}</span>
             </div>
             <div className="summary-row total">
               <span>Total:</span>
-              <span>${getCartTotal().toFixed(2)}</span>
+              <span>₹{getCartTotal().toFixed(2)}</span>
             </div>
             <div className="checkout-form">
               <div className="form-group">
@@ -592,7 +564,7 @@ const PointOfSale = () => {
                 </select>
               </div>
               <button onClick={handleCheckout} className="checkout-btn">
-                Complete Sale - ${getCartTotal().toFixed(2)}
+                Complete Sale - ₹{getCartTotal().toFixed(2)}
               </button>
             </div>
           </div>
