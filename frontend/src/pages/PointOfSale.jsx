@@ -142,6 +142,8 @@ const PointOfSale = () => {
         return `${product.name} (per 100g)`;
       case "pack":
         return `${product.name} (per pack)`;
+      case "litre":
+        return `${product.name} (per litre)`; // ✅ NEW
       default:
         return product.name;
     }
@@ -158,6 +160,10 @@ const PointOfSale = () => {
         return `${product.stockQuantity} pack${
           product.stockQuantity !== 1 ? "s" : ""
         } in stock`;
+      case "litre":
+        return `${product.stockQuantity} litre${
+          product.stockQuantity !== 1 ? "s" : ""
+        } in stock`; // ✅ NEW
       default:
         return `${product.stockQuantity} pc${
           product.stockQuantity !== 1 ? "s" : ""
@@ -177,6 +183,10 @@ const PointOfSale = () => {
         return `${item.quantity} pack${item.quantity !== 1 ? "s" : ""} ${
           item.name
         }`;
+      case "litre":
+        return `${item.quantity} litre${item.quantity !== 1 ? "s" : ""} ${
+          item.name
+        }`; // ✅ NEW
       default:
         return `${item.quantity} ${item.name}`;
     }
@@ -387,7 +397,7 @@ const PointOfSale = () => {
       {/* Products */}
       <div className="product-selection">
         <div className="search-header">
-          <h2>Products</h2>
+          <h2>Point of Sale</h2>
           <div className="search-controls">
             <input
               ref={searchInputRef}

@@ -567,6 +567,9 @@
     gap: 15px;
   }
 
+  h2 {
+    text-align: center;
+  }
   .search-header {
     flex-direction: column;
     align-items: stretch;
@@ -579,11 +582,13 @@
 
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    text-align: center;
   }
 
   .cart-item {
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
   }
 
   .quantity-controls {
@@ -611,6 +616,9 @@
   .product-grid {
     grid-template-columns: 1fr;
   }
+  h2 {
+    text-align: center;
+  }
 
   .cart-container {
     padding: 15px;
@@ -619,6 +627,7 @@
   .cart-item {
     height: fit-content;
     padding: 10px;
+    align-items: center;
   }
 
   .summary-row {

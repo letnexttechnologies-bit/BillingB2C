@@ -14,7 +14,7 @@ const Inventory = () => {
   });
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // 🔄 Helper function to load products
+  // 🔄 Load products
   const refreshProducts = async () => {
     try {
       const loadedProducts = await getProducts();
@@ -30,7 +30,6 @@ const Inventory = () => {
     }
   };
 
-  // Load products on mount
   useEffect(() => {
     refreshProducts();
   }, []);
@@ -47,24 +46,21 @@ const Inventory = () => {
 
     try {
       if (editingProduct) {
-        // Update existing product
-        newProduct._id = editingProduct._id; // use _id from backend
+        newProduct._id = editingProduct._id;
         await saveProduct(newProduct);
         setEditingProduct(null);
       } else {
-        // Add new product
         await saveProduct(newProduct);
       }
 
-      await refreshProducts(); // refresh after save
-
+      await refreshProducts();
       setFormData({
         name: "",
         price: "",
         stockQuantity: "",
         unit: "piece",
         tagNo: "",
-      }); // reset form
+      });
     } catch (err) {
       console.error("Failed to save product:", err);
     }
@@ -194,6 +190,7 @@ const Inventory = () => {
                 <option value="kg">Kilogram</option>
                 <option value="gram">Gram</option>
                 <option value="pack">Pack</option>
+                <option value="litre">Litre</option> {/* ✅ NEW */}
               </select>
             </div>
           </div>
@@ -235,33 +232,63 @@ const Inventory = () => {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
-                  <tr key={product._id} className="product-row">
-                    <td className="product-name">{product.name}</td>
-                    <td className="product-tag">{product.tagNo || "N/A"}</td>
-                    <td className="product-price">
-                      ₹{Number(product.price).toFixed(2)}
-                    </td>
-                    <td className="product-quantity">
-                      {getUnitDisplay(product.stockQuantity, product.unit)}
-                    </td>
-                    <td className="product-unit">
-                      {formatUnitName(product.unit)}
-                    </td>
-                    <td className="product-actions">
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="btn-edit">
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product._id)}
-                        className="btn-delete">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {products
+                  .sort((a, b) => {
+                    if (a.stockQuantity === 0) return -1;
+                    if (b.stockQuantity === 0) return 1;
+                    if (a.stockQuantity <= 5 && b.stockQuantity > 5) return -1;
+                    if (b.stockQuantity <= 5 && a.stockQuantity > 5) return 1;
+                    return 0;
+                  })
+                  .map((product) => {
+                    let rowClass = "";
+                    let statusLabel = "";
+
+                    if (product.stockQuantity === 0) {
+                      rowClass = "out-of-stock";
+                      statusLabel = "Out of Stock";
+                    } else if (product.stockQuantity <= 5) {
+                      rowClass = "low-stock";
+                      statusLabel = "Low Stock";
+                    }
+
+                    return (
+                      <tr
+                        key={product._id}
+                        className={`product-row ${rowClass}`}>
+                        <td className="product-name">{product.name}</td>
+                        <td className="product-tag">
+                          {product.tagNo || "N/A"}
+                        </td>
+                        <td className="product-price">
+                          ₹{Number(product.price).toFixed(2)}
+                        </td>
+                        <td className="product-quantity">
+                          {getUnitDisplay(product.stockQuantity, product.unit)}
+                          {statusLabel && (
+                            <span className={`status-badge ${rowClass}`}>
+                              {statusLabel}
+                            </span>
+                          )}
+                        </td>
+                        <td className="product-unit">
+                          {formatUnitName(product.unit)}
+                        </td>
+                        <td className="product-actions">
+                          <button
+                            onClick={() => handleEdit(product)}
+                            className="btn-edit">
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product._id)}
+                            className="btn-delete">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>

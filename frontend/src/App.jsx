@@ -12,15 +12,31 @@ import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
 
+  // Restore login state on refresh
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem("isLoggedIn");
+    const storedUsername = localStorage.getItem("username");
+
+    if (loggedInStatus === "true") {
+      setIsLoggedIn(true);
+      setUsername(storedUsername || "Admin");
+    }
+  }, []);
+
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
+    setUsername(localStorage.getItem("username") || "Admin");
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
     setIsLoggedIn(false);
+    setUsername("");
   };
 
   // Handle install prompt
@@ -56,7 +72,7 @@ function App() {
         className={`app-container ${
           isLoggedIn ? "with-navbar" : "login-only"
         }`}>
-        {isLoggedIn && <Navbar onLogout={handleLogout} />}
+        {isLoggedIn && <Navbar username={username} onLogout={handleLogout} />}
 
         {/* Show install button if prompt is available */}
         {showInstallButton && (

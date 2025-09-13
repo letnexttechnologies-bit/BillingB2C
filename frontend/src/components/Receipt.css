@@ -88,9 +88,10 @@
   grid-template-columns: 0.2fr 1.5fr 0.5fr 0.5fr 0.8fr 0.8fr 0.7fr 0.7fr 0.8fr;
   gap: 5px;
   text-align: right;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px dotted #ccc;
   padding-bottom: 5px;
   padding-top: 5px;
+  font-size: 9px;
 }
 
 .receipt-items-table .table-header {
@@ -214,37 +215,90 @@
 }
 
 /* Print Styles */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .receipt-overlay {
-    visibility: visible;
-    position: static;
-    background: none;
-    padding: 0;
-    justify-content: flex-start;
-  }
+
+/* 📱 Extra Small Devices (Phones <480px) */
+@media (max-width: 480px) {
   .receipt-container {
-    max-width: none;
-    max-height: none;
-    box-shadow: none;
-    border: none;
-    padding: 10px;
+    max-width: 100%;
+    border-radius: 0;
+    padding: 6px;
   }
-  .receipt-actions {
-    display: none !important;
-  }
+
   .receipt {
-    padding: 0;
-    width: 100%;
-    font-size: 12px;
+    font-size: 9px;
+    padding: 8px;
   }
-  #receipt-to-print,
-  #receipt-to-print * {
-    visibility: visible;
+
+  .receipt-items-table {
+    overflow-x: auto;
+    display: block;
   }
-  #receipt-to-print {
-    position: static;
+
+  .receipt-items-table .table-header,
+  .receipt-items-table .table-row {
+    min-width: 420px; /* scroll instead of overlapping */
+    font-size: 8px;
+  }
+
+  .receipt-row {
+    font-size: 9px;
+  }
+  .receipt-row.total {
+    font-size: 11px;
+  }
+  .total-in-words {
+    font-size: 9px;
+  }
+  .receipt-footer {
+    font-size: 8px;
   }
 }
+
+/* 📲 Small Devices (Large Phones & Small Tablets <768px) */
+@media (max-width: 768px) {
+  .receipt-container {
+    max-width: 95%;
+    padding: 10px;
+  }
+
+  .receipt {
+    font-size: 11px;
+    padding: 12px;
+  }
+
+  .receipt-items-table .table-header,
+  .receipt-items-table .table-row {
+    font-size: 10px;
+  }
+
+  .receipt-row {
+    font-size: 11px;
+  }
+  .receipt-row.total {
+    font-size: 13px;
+  }
+  .total-in-words {
+    font-size: 11px;
+  }
+  .receipt-footer {
+    font-size: 10px;
+  }
+}
+
+/* 💻 Medium Devices (Tablets & Small Laptops <1024px) */
+@media (max-width: 1024px) {
+  .receipt-container {
+    max-width: 90%;
+  }
+
+  .receipt {
+    font-size: 12px;
+  }
+
+  .receipt-items-table .table-header,
+  .receipt-items-table .table-row {
+    font-size: 11px;
+  }
+}
+
+/* 🖥️ Large Screens (Desktops ≥1025px) — default CSS applies */

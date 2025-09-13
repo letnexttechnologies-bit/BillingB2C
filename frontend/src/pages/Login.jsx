@@ -22,6 +22,11 @@ const Login = ({ onLoginSuccess }) => {
 
     if (mobileNumber === adminMobile && password === adminPassword) {
       setIsLoading(false);
+
+      // Save login to localStorage
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", "Admin");
+
       onLoginSuccess();
     } else {
       setError("Invalid mobile number or password.");

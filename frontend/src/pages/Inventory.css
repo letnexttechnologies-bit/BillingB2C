@@ -210,6 +210,34 @@
 .btn-delete:hover {
   background: #dc2626;
 }
+/* Row highlights */
+.product-row.low-stock {
+  background-color: #fff3cd; /* light yellow */
+}
+
+.product-row.out-of-stock {
+  background-color: #f8d7da; /* light red */
+}
+
+/* Status badges */
+.status-badge {
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status-badge.low-stock {
+  background: #ffc107;
+  color: #000;
+}
+
+.status-badge.out-of-stock {
+  background: #dc3545;
+  color: #fff;
+}
 
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
@@ -220,6 +248,9 @@
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+  h1 {
+    text-align: center;
   }
 
   .products-table {
@@ -245,6 +276,9 @@
 @media (max-width: 480px) {
   .inventory-container {
     padding: 10px;
+  }
+  h1 {
+    text-align: center;
   }
 
   .products-table-container {
