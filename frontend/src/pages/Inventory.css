@@ -242,3 +242,33 @@
     font-size: 12px;
   }
 }
+@media (max-width: 480px) {
+  .inventory-container {
+    padding: 10px;
+  }
+
+  .products-table-container {
+    overflow-x: auto; /* ✅ allow horizontal scrolling */
+  }
+
+  .products-table {
+    min-width: 600px; /* ✅ prevent table from shrinking too much */
+    font-size: 13px;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 8px;
+  }
+
+  .product-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
