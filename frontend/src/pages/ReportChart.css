@@ -912,7 +912,7 @@
   }
 
   .chart-container {
-    min-width: 300px;
+    min-width: 100%;
   }
 
   .chart-bar {
@@ -964,5 +964,75 @@
     flex-direction: column;
     gap: 5px;
     text-align: center;
+  }
+}
+/* Base (desktop/tablet) */
+.quick-filters {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap; /* allows wrapping if screen is narrow */
+}
+
+.filter-btn {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #007bff;
+  background: white;
+  color: #007bff;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Active button */
+.filter-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Small tablets (≤768px) */
+@media (max-width: 768px) {
+  .quick-filters {
+    gap: 0.6rem;
+  }
+
+  .filter-btn {
+    flex: 1;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    min-width: 100px;
+  }
+}
+
+/* Large mobiles (≤600px) */
+@media (max-width: 600px) {
+  .quick-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .filter-btn {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.7rem;
+    justify-content: center;
+  }
+}
+
+/* Very small devices (≤400px) */
+@media (max-width: 400px) {
+  .filter-btn {
+    font-size: 0.85rem;
+    padding: 0.6rem;
   }
 }
