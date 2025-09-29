@@ -16,6 +16,10 @@ const Reports = () => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
 
+  // ✅ Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const invoicesPerPage = 10;
+
   const loadInvoices = useCallback(async () => {
     try {
       const allInvoices = await getInvoices();
@@ -66,6 +70,7 @@ const Reports = () => {
 
     setFilteredInvoices(filtered);
     calculateSummary(filtered);
+    setCurrentPage(1); // ✅ Reset page when filters change
   };
 
   const clearFilters = () => {
@@ -73,6 +78,7 @@ const Reports = () => {
     setFilterPaymentMethod("ALL");
     setFilteredInvoices(invoices);
     calculateSummary(invoices);
+    setCurrentPage(1);
   };
 
   const formatCurrency = (amount) => {
@@ -127,17 +133,10 @@ const Reports = () => {
   };
 
   const getPaymentMethodCounts = () => {
-    const counts = {
-      CASH: 0,
-      CARD: 0,
-      UPI: 0,
-      WALLET: 0,
-    };
-
+    const counts = { CASH: 0, CARD: 0, UPI: 0, WALLET: 0 };
     filteredInvoices.forEach((invoice) => {
       counts[invoice.paymentMethod] = (counts[invoice.paymentMethod] || 0) + 1;
     });
-
     return counts;
   };
 
@@ -151,16 +150,25 @@ const Reports = () => {
     }
   };
 
-  const handlePrintReceipt = () => {
-    window.print();
-  };
-
+  const handlePrintReceipt = () => window.print();
   const handleCloseReceipt = () => {
     setShowReceipt(false);
     setSelectedInvoice(null);
   };
 
   const paymentMethodCounts = getPaymentMethodCounts();
+
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(filteredInvoices.length / invoicesPerPage);
+  const indexOfLast = currentPage * invoicesPerPage;
+  const indexOfFirst = indexOfLast - invoicesPerPage;
+  const currentInvoices = filteredInvoices.slice(indexOfFirst, indexOfLast);
+
+  const goToPage = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
 
   return (
     <div className="reports-container">
@@ -203,7 +211,7 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Payment Method Distribution */}
+      {/* Payment Distribution */}
       <div className="payment-distribution">
         <h2>Payment Method Distribution</h2>
         <div className="payment-cards">
@@ -233,7 +241,6 @@ const Reports = () => {
       </div>
 
       {/* Sales Table */}
-      {/* Sales Table */}
       <div className="sales-table-container">
         <h2>Sales History</h2>
         {filteredInvoices.length === 0 ? (
@@ -244,44 +251,80 @@ const Reports = () => {
               : "Start selling to see transactions here."}
           </p>
         ) : (
-          <div className="sales-table">
-            <div className="table-header">
-              <span>Invoice ID</span>
-              <span>Date & Time</span>
-              <span>Customer</span>
-              <span>Items</span>
-              <span>Total Amount</span>
-              <span>Payment Method</span>
-              <span>Actions</span>
-            </div>
-            {filteredInvoices.map((invoice) => (
-              <div key={invoice._id} className="table-row">
-                {/* ✅ Show custom invoiceId if available */}
-                <span className="invoice-id">
-                  {invoice.invoiceId ?? invoice._id}
-                </span>
-
-                <span className="date">{formatDate(invoice.date)}</span>
-                <span className="customer">{invoice.customerName}</span>
-                <span className="items">{invoice.items.length} items</span>
-                <span className="amount">
-                  {formatCurrency(invoice.totalAmount)}
-                </span>
-                <span
-                  className={`payment-method ${invoice.paymentMethod.toLowerCase()}`}>
-                  {invoice.paymentMethod}
-                </span>
-                <span className="actions">
-                  <button
-                    className="view-btn"
-                    onClick={() => handleViewReceipt(invoice._id)}
-                    title="View Receipt">
-                    👁️ View
-                  </button>
-                </span>
+          <>
+            <div className="sales-table">
+              <div className="table-header">
+                <span>Invoice ID</span>
+                <span>Date & Time</span>
+                <span>Customer</span>
+                <span>Items</span>
+                <span>Total Amount</span>
+                <span>Payment Method</span>
+                <span>Actions</span>
               </div>
-            ))}
-          </div>
+              {currentInvoices.map((invoice) => (
+                <div key={invoice._id} className="table-row">
+                  <span className="invoice-id">
+                    {invoice.invoiceId ?? invoice._id}
+                  </span>
+                  <span className="date">{formatDate(invoice.date)}</span>
+                  <span className="customer">{invoice.customerName}</span>
+                  <span className="items">{invoice.items.length} items</span>
+                  <span className="amount">
+                    {formatCurrency(invoice.totalAmount)}
+                  </span>
+                  <span
+                    className={`payment-method ${invoice.paymentMethod.toLowerCase()}`}>
+                    {invoice.paymentMethod}
+                  </span>
+                  <span className="actions">
+                    <button
+                      className="view-btn"
+                      onClick={() => handleViewReceipt(invoice._id)}
+                      title="View Receipt">
+                      👁️ View
+                    </button>
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* ✅ Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pagination-controls">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(1)}>
+                  ⏮ First
+                </button>
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(currentPage - 1)}>
+                  ◀ Prev
+                </button>
+
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={currentPage === i + 1 ? "active-page" : ""}
+                    onClick={() => goToPage(i + 1)}>
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(currentPage + 1)}>
+                  Next ▶
+                </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(totalPages)}>
+                  Last ⏭
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

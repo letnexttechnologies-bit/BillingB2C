@@ -316,6 +316,18 @@
     padding: 6px 12px;
     font-size: 12px;
   }
+
+  .pagination-controls {
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .pagination-controls button {
+    padding: 5px 8px;
+    font-size: 12px;
+    min-width: 32px;
+    /* keep touch-friendly size */
+  }
 }
 
 @media (max-width: 480px) {
@@ -352,5 +364,19 @@
   .btn-delete {
     padding: 6px 10px;
     font-size: 12px;
+  }
+
+  .pagination-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .pagination-controls button {
+    flex: 1 0 auto;
+    /* buttons shrink but stay usable */
+    font-size: 12px;
+    padding: 5px 6px;
   }
 }

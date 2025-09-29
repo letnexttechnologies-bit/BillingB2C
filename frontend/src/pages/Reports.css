@@ -2,7 +2,8 @@
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
-  margin-left: 250px; /* space for sidebar (desktop) */
+  margin-left: 250px;
+  /* space for sidebar (desktop) */
   transition: margin-left 0.3s ease;
 }
 
@@ -338,12 +339,51 @@
   background: #0056b3;
 }
 
+/* --- Pagination Controls --- */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.pagination-controls button {
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-controls .active-page {
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .reports-container {
-    margin-left: 200px; /* smaller sidebar/tablet */
+    margin-left: 200px;
+    /* smaller sidebar/tablet */
     padding: 15px;
   }
+
 
   .summary-cards {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -356,11 +396,24 @@
   .payment-cards {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
+
+  .pagination-controls {
+    gap: 6px;
+    flex-wrap: wrap;
+    /* allow wrapping to next line */
+    padding: 8px;
+  }
+
+  .pagination-controls button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 768px) {
   .reports-container {
-    margin-left: 0; /* hide sidebar offset */
+    margin-left: 0;
+    /* hide sidebar offset */
     padding: 10px;
   }
 
@@ -384,14 +437,28 @@
   }
 
   .sales-table-container {
-    overflow-x: auto; /* ✅ allow scroll for wide tables */
+    overflow-x: auto;
+    /* ✅ allow scroll for wide tables */
   }
 
   .table-header,
   .table-row {
     grid-template-columns: 120px 120px 120px 80px 120px 120px 80px;
     font-size: 0.85rem;
-    min-width: 800px; /* ✅ prevent squashing */
+    min-width: 800px;
+    /* ✅ prevent squashing */
+  }
+
+  .pagination-controls {
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .pagination-controls button {
+    padding: 5px 8px;
+    font-size: 12px;
+    min-width: 32px;
+    /* keep touch-friendly size */
   }
 }
 
@@ -420,5 +487,19 @@
   .export-btn {
     font-size: 14px;
     padding: 10px 15px;
+  }
+
+  .pagination-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .pagination-controls button {
+    flex: 1 0 auto;
+    /* buttons shrink but stay usable */
+    font-size: 12px;
+    padding: 5px 6px;
   }
 }
