@@ -5,7 +5,8 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  margin-left: 250px; /* shift right to clear sidebar */
+  margin-left: 250px;
+  /* shift right to clear sidebar */
 }
 
 /* Page Title */
@@ -58,7 +59,8 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #3b82f6; /* Highlight on focus */
+  border-color: #3b82f6;
+  /* Highlight on focus */
 }
 
 .unit-select {
@@ -126,7 +128,8 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Ensures borders and shadows work with rounded corners */
+  overflow: hidden;
+  /* Ensures borders and shadows work with rounded corners */
 }
 
 .products-table {
@@ -210,13 +213,16 @@
 .btn-delete:hover {
   background: #dc2626;
 }
+
 /* Row highlights */
 .product-row.low-stock {
-  background-color: #fff3cd; /* light yellow */
+  background-color: #fff3cd;
+  /* light yellow */
 }
 
 .product-row.out-of-stock {
-  background-color: #f8d7da; /* light red */
+  background-color: #f8d7da;
+  /* light red */
 }
 
 /* Status badges */
@@ -239,6 +245,43 @@
   color: #fff;
 }
 
+/* --- Pagination Controls --- */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.pagination-controls button {
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-controls .active-page {
+  background: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+}
+
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
   .inventory-container {
@@ -249,6 +292,7 @@
   .form-row {
     grid-template-columns: 1fr;
   }
+
   h1 {
     text-align: center;
   }
@@ -273,20 +317,24 @@
     font-size: 12px;
   }
 }
+
 @media (max-width: 480px) {
   .inventory-container {
     padding: 10px;
   }
+
   h1 {
     text-align: center;
   }
 
   .products-table-container {
-    overflow-x: auto; /* ✅ allow horizontal scrolling */
+    overflow-x: auto;
+    /* ✅ allow horizontal scrolling */
   }
 
   .products-table {
-    min-width: 600px; /* ✅ prevent table from shrinking too much */
+    min-width: 600px;
+    /* ✅ prevent table from shrinking too much */
     font-size: 13px;
   }
 

@@ -7,7 +7,8 @@
   padding-bottom: 20px;
   background: #f8f9fa;
   overflow: hidden;
-  margin-left: 250px; /* Push content to the right of sidebar */
+  margin-left: 250px;
+  /* Push content to the right of sidebar */
 }
 
 /* --- Product Selection Section --- */
@@ -570,6 +571,7 @@
   h2 {
     text-align: center;
   }
+
   .search-header {
     flex-direction: column;
     align-items: stretch;
@@ -616,6 +618,7 @@
   .product-grid {
     grid-template-columns: 1fr;
   }
+
   h2 {
     text-align: center;
   }

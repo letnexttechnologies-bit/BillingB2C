@@ -1,4 +1,3 @@
-// src/pages/Inventory.js
 import React, { useState, useEffect } from "react";
 import { getProducts, saveProduct, deleteProduct } from "../api/index";
 import "./Inventory.css";
@@ -13,6 +12,10 @@ const Inventory = () => {
     tagNo: "",
   });
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // ✅ Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
   // 🔄 Load products
   const refreshProducts = async () => {
@@ -119,6 +122,26 @@ const Inventory = () => {
     return safeUnit.charAt(0).toUpperCase() + safeUnit.slice(1);
   };
 
+  // ✅ Pagination logic
+  const sortedProducts = products.sort((a, b) => {
+    if (a.stockQuantity === 0) return -1;
+    if (b.stockQuantity === 0) return 1;
+    if (a.stockQuantity <= 5 && b.stockQuantity > 5) return -1;
+    if (b.stockQuantity <= 5 && a.stockQuantity > 5) return 1;
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+  const indexOfLast = currentPage * productsPerPage;
+  const indexOfFirst = indexOfLast - productsPerPage;
+  const currentProducts = sortedProducts.slice(indexOfFirst, indexOfLast);
+
+  const goToPage = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
   return (
     <div className="inventory-container">
       <h1>Manage Products</h1>
@@ -190,7 +213,7 @@ const Inventory = () => {
                 <option value="kg">Kilogram</option>
                 <option value="gram">Gram</option>
                 <option value="pack">Pack</option>
-                <option value="litre">Litre</option> {/* ✅ NEW */}
+                <option value="litre">Litre</option>
               </select>
             </div>
           </div>
@@ -219,28 +242,21 @@ const Inventory = () => {
             No products found. Add your first product above.
           </p>
         ) : (
-          <div className="products-table-container">
-            <table className="products-table">
-              <thead>
-                <tr>
-                  <th>Product Name</th>
-                  <th>Tag Number</th>
-                  <th>Price</th>
-                  <th>Stock Quantity</th>
-                  <th>Unit</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products
-                  .sort((a, b) => {
-                    if (a.stockQuantity === 0) return -1;
-                    if (b.stockQuantity === 0) return 1;
-                    if (a.stockQuantity <= 5 && b.stockQuantity > 5) return -1;
-                    if (b.stockQuantity <= 5 && a.stockQuantity > 5) return 1;
-                    return 0;
-                  })
-                  .map((product) => {
+          <>
+            <div className="products-table-container">
+              <table className="products-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Tag Number</th>
+                    <th>Price</th>
+                    <th>Stock Quantity</th>
+                    <th>Unit</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentProducts.map((product) => {
                     let rowClass = "";
                     let statusLabel = "";
 
@@ -289,9 +305,46 @@ const Inventory = () => {
                       </tr>
                     );
                   })}
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
+
+            {/* ✅ Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pagination-controls">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(1)}>
+                  ⏮ First
+                </button>
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(currentPage - 1)}>
+                  ◀ Prev
+                </button>
+
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={currentPage === i + 1 ? "active-page" : ""}
+                    onClick={() => goToPage(i + 1)}>
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(currentPage + 1)}>
+                  Next ▶
+                </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(totalPages)}>
+                  Last ⏭
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
